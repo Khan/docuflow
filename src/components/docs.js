@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import {StyleSheet, css} from "aphrodite";
+import Markdown from "react-markdown";
 
 import TypeAnnotation from "./annotations/type-annotation.js";
 import { ObjectTypeAnnotation } from "../../node_modules/@babel/types";
@@ -87,24 +88,10 @@ class PropsTable extends React.Component<{node: ObjectTypeAnnotationT}> {
                             if (lines[lines.length - 1].trim() === "") {
                                 lines.pop();
                             }
-
-                            const paragraphs = [""];
-                            for (const line of lines) {
-                                if (line === "") {
-                                    paragraphs.push(line);
-                                } else {
-                                    paragraphs[paragraphs.length - 1] += " " + line;
-                                }
-                            }
-
-                            // TODO(kevinb): render this as markdown
-
-                            if (paragraphs.length > 1) {
-                                return paragraphs.map((p, index) => 
-                                    <div key={index} className={css(styles.paragraph)}>{p}</div>);
-                            } else {
-                                return paragraphs[0];
-                            }
+                            return <Markdown 
+                                className={css(styles.markdown)}
+                                source={lines.join("\n")}
+                            />;
                         })}
                     </td>
                 </tr>
@@ -260,6 +247,10 @@ const styles = StyleSheet.create({
     },
     code: {
         fontFamily: "monospace",
-        fontSize: 14,
+        fontSize: 16,
+    },
+    markdown: {
+        marginTop: -16,
+        marginBottom: -16,
     },
 });
