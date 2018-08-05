@@ -163,6 +163,11 @@ export type TypeAnnotation = {
     typeAnnotation: Type,
 }
 
+export type IntersectionTypeAnnotationT = {
+    type: "IntersectionTypeAnnotation",
+    types: Array<Type>,
+}
+
 export type Type =
     | UnionTypeAnnotationT
     | ObjectTypeAnnotationT
@@ -171,3 +176,4 @@ export type Type =
     | NullableTypeAnnotationT
     | FunctionTypeAnnotationT
     | ExistsTypeAnnotationT
+    | IntersectionTypeAnnotationT

@@ -4,21 +4,11 @@ import * as React from "react";
 import TypeAnnotation from "./type-annotation.js";
 
 import type {UnionTypeAnnotationT} from "../../types/types.js";
+import intersperse from "../../util/intersperse.js";
 
 type Props = {
     node: UnionTypeAnnotationT,
 };
-
-function intersperse(items: Array<React.Node>, sep: React.Element<*>) {
-    const output = [];
-    items.forEach((item, index) => {
-        if (index > 0) {
-            output.push(React.cloneElement(sep));
-        }
-        output.push(item);
-    });
-    return output;
-}
 
 export default class UnionTypeAnnotation extends React.Component<Props> {
     render() {

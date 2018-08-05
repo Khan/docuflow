@@ -4,20 +4,10 @@ import * as React from "react";
 import TypeAnnotation from "./type-annotation.js";
 
 import type {FunctionTypeAnnotationT} from "../../types/types.js";
+import intersperse from "../../util/intersperse.js";
 
 type Props = {
     node: FunctionTypeAnnotationT
-}
-
-function intersperse(items: Array<React.Node>, sep: React.Element<*>) {
-    const output = [];
-    items.forEach((item, index) => {
-        if (index > 0) {
-            output.push(React.cloneElement(sep));
-        }
-        output.push(item);
-    });
-    return output;
 }
 
 export default class FunctionTypeAnnotation extends React.Component<Props> {
