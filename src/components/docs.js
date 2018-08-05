@@ -1,29 +1,14 @@
 // @flow
 import * as React from "react";
 import {StyleSheet, css} from "aphrodite";
-import Markdown from "react-markdown";
 
-import TypeAnnotation from "./annotations/type-annotation.js";
 import Package from "./package.js";
-import FunctionDecl from "./function-decl.js";
-import intersperse from "../util/intersperse.js";
-
-import type {
-    ObjectTypeAnnotationT, 
-    GenericTypeAnnotationT, 
-    FunctionDeclaration, 
-    ClassDeclaration,
-} from "../types/types.js";
 
 const data = require("../../data/data.json");
 
+// eslint-disable-next-line no-console
 console.log(data);
 
-type Declaration = {
-    name: string,
-    source: string,
-    declaration: ClassDeclaration | FunctionDeclaration,
-};
 export default class Docs extends React.Component<{}> {
     render() {
         const names = Object.keys(data);

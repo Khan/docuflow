@@ -74,7 +74,6 @@ export default class FunctionDecl extends React.Component<{node: FunctionDeclara
                     </tr>
                     {node.params.map((param, index) => {
                         const {leadingComments} = param;
-                        console.log(param);
                         return <tr className={css(styles.row)}>
                             <td className={css(styles.cell, styles.code)}>{param.name}</td>
                             <td className={css(styles.cell, styles.code)}>

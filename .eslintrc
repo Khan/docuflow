@@ -1,0 +1,9 @@
+{
+    "extends": [
+        "./eslint/eslintrc"
+    ],
+    "rules": {
+        "flowtype/no-types-missing-file-annotation": 2,
+        "react/jsx-handler-names": 2
+    }
+}

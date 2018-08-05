@@ -6,8 +6,8 @@ import PropsTable from "./props-table.js";
 import FunctionDecl from "./function-decl.js";
 
 import type {
-    ObjectTypeAnnotationT, 
-    GenericTypeAnnotationT, 
+    ObjectTypeAnnotationT,
+    GenericTypeAnnotationT,
     FunctionDeclaration, 
     ClassDeclaration,
 } from "../types/types.js";
@@ -61,6 +61,11 @@ type Props = {
     files: any,
 };
 
+type Declaration = {
+    name: string,
+    source: string,
+    declaration: ClassDeclaration | FunctionDeclaration,
+};
 export default class Package extends React.Component<Props> {
     render() {
         const {declarations, files} = this.props;
@@ -79,8 +84,6 @@ export default class Package extends React.Component<Props> {
         const funcDecls: Array<Declaration> = declarations
             .filter(decl => isFunctionDeclaration(decl.declaration))
             .sort();
-
-        console.log(funcDecls);
 
         return <div>
             <h1>{this.props.name}</h1>

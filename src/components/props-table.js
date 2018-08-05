@@ -7,9 +7,6 @@ import TypeAnnotation from "./annotations/type-annotation.js";
 
 import type {
     ObjectTypeAnnotationT, 
-    GenericTypeAnnotationT, 
-    FunctionDeclaration, 
-    ClassDeclaration,
     Type,
 } from "../types/types.js";
 
@@ -48,8 +45,8 @@ export default class PropsTable extends React.Component<{node: Type}> {
                         {"..."}
                         <TypeAnnotation node={prop.argument}/>
                     </td>
-                    <td className={css(styles.cell, styles.code)}></td>
-                    <td className={css(styles.cell)}></td>
+                    <td className={css(styles.cell, styles.code)} />
+                    <td className={css(styles.cell)} />
                 </tr>;
             }
         });
