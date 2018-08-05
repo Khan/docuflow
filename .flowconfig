@@ -1,0 +1,12 @@
+[ignore]
+<PROJECT_ROOT>/wonder-blocks/*
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]
