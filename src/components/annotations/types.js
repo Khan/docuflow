@@ -8,6 +8,7 @@ type CommentLine = {
 type Identifier = {
     type: "Identifier",
     name: string,
+    typeAnnotation?: TypeAnnotationT,
 }
 
 type QualifiedTypeIdentifier = {
@@ -80,6 +81,32 @@ export type FunctionTypeAnnotationT = CommonProps & {
 
 export type ExistsTypeAnnotationT = CommonProps & {
     type: "ExistsTypeAnnotation",
+}
+
+type BlockStatement = {
+    type: "BlockStatement",
+    body: Array<any>,  // TODO
+    directives: Array<any>,  // TODO
+}
+
+type TypeParameter = {
+    type: "TypeParameter",
+    name: string,
+    bound: TypeAnnotationT,
+}
+
+type TypeParameterDeclaration = CommonProps & {
+    type: "TypeParameterDeclaration",
+    params: Array<TypeParameter>,
+}
+
+export type FunctionDeclaration = CommonProps & {
+    type: "FunctionDeclaration",
+    async: boolean,
+    body: BlockStatement,
+    id: Identifier,
+    params: Array<Identifier>,
+    typeParameters: TypeParameterDeclaration,
 }
 
 export type TypeAnnotationT =

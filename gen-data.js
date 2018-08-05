@@ -42,7 +42,7 @@ const processFile = (filename, data = {}) => {
     const importedTypes = {};
 
     traverse(ast, {
-        enter(p) {
+        exit(p) {
             if (p.isExportNamedDeclaration()) {
                 if (p.node.declaration) {
                     const declaration = p.node.declaration;
@@ -75,6 +75,9 @@ const processFile = (filename, data = {}) => {
                 }
             } else if (p.isExportDefaultDeclaration()) {
                 exportedSymbols["default"] = p.node.declaration;
+                if (p.node.leadingComments) {
+                    exportedSymbols["default"].leadingComments = p.node.leadingComments;
+                }
             } else if (p.isImportDeclaration()) {
                 for (const specifier of p.node.specifiers) {
                     if (specifier.type === "ImportDefaultSpecifier") {
