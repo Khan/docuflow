@@ -3,7 +3,7 @@ import * as React from "react";
 
 import TypeAnnotation from "./type-annotation.js";
 
-import type {FunctionTypeAnnotationT} from "./types.js";
+import type {FunctionTypeAnnotationT} from "../../types/types.js";
 
 type Props = {
     node: FunctionTypeAnnotationT

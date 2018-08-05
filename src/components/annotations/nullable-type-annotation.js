@@ -3,7 +3,7 @@ import * as React from "react";
 
 import TypeAnnotation from "./type-annotation.js";
 
-import type {NullableTypeAnnotationT} from "./types.js";
+import type {NullableTypeAnnotationT} from "../../types/types.js";
 
 type Props = {
     node: NullableTypeAnnotationT

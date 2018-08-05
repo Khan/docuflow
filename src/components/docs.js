@@ -5,7 +5,12 @@ import Markdown from "react-markdown";
 
 import TypeAnnotation from "./annotations/type-annotation.js";
 
-import type {ObjectTypeAnnotationT, FunctionDeclaration} from "./annotations/types.js";
+import type {
+    ObjectTypeAnnotationT, 
+    GenericTypeAnnotationT, 
+    FunctionDeclaration, 
+    ClassDeclaration,
+} from "../types/types.js";
 
 const data = require("../../data/data.json");
 
@@ -28,9 +33,9 @@ type File = {
     importedSymbols: any,
 };
 
-const isClassDeclaration = node => node && node.type === "ClassDeclaration";
-const isFunctionDeclaration = node => node && node.type === "FunctionDeclaration";
-const isComponent = node => {
+const isClassDeclaration = (node: any) => node && node.type === "ClassDeclaration";
+const isFunctionDeclaration = (node: any) => node && node.type === "FunctionDeclaration";
+const isComponent = (node: any) => {
     if (!isClassDeclaration(node)) {
         return false;
     }
@@ -50,7 +55,7 @@ const isComponent = node => {
     return false;
 };
 
-const getProps = node => {
+const getProps = (node: any): ?(ObjectTypeAnnotationT | GenericTypeAnnotationT) => {
     if (!isComponent(node)) {
         return null;
     }
@@ -183,7 +188,7 @@ class FunctionDecl extends React.Component<{node: FunctionDeclaration}> {
                         if (param.bound) {
                             return <React.Fragment>
                                 {param.name}
-                                {" | "}
+                                {": "}
                                 <TypeAnnotation node={param.bound.typeAnnotation} />
                             </React.Fragment>;
                         } else {
@@ -249,20 +254,28 @@ class FunctionDecl extends React.Component<{node: FunctionDeclaration}> {
     }
 }
 
+type Declaration = {
+    name: string,
+    source: string,
+    declaration: ClassDeclaration | FunctionDeclaration,
+};
 
 class Package extends React.Component<Props> {
     render() {
         const {declarations, files} = this.props;
 
-        const componentDecls = declarations
+        // $FlowFixMe
+        const componentDecls: Array<Declaration> = declarations
             .filter(decl => isComponent(decl.declaration))
             .sort();
             
-        const classDecls = declarations
+        // $FlowFixMe
+        const classDecls: Array<Declaration> = declarations
             .filter(decl => isClassDeclaration(decl.declaration) && !componentDecls.includes(decl))
             .sort();
 
-        const funcDecls = declarations
+        // $FlowFixMe
+        const funcDecls: Array<Declaration> = declarations
             .filter(decl => isFunctionDeclaration(decl.declaration))
             .sort();
 
@@ -271,8 +284,11 @@ class Package extends React.Component<Props> {
         return <div>
             <h1>{this.props.name}</h1>
             {componentDecls.length > 0 && <h2>Components</h2>}
-            {componentDecls.map(decl => {
+            {componentDecls.map((decl: Declaration) => {
                 const props = getProps(decl.declaration);
+                if (!props) {
+                    return null;
+                }
 
                 let propTypes = null;
                 if (props.type === "GenericTypeAnnotation") {
@@ -299,14 +315,15 @@ class Package extends React.Component<Props> {
                 </div>;
             })}
             {classDecls.length > 0 && <h2>Classes</h2>}
-            {classDecls.map(decl => <div key={decl.name}>
+            {classDecls.map((decl: Declaration) => <div key={decl.name}>
                 <h3>{decl.name}</h3>
                 <div>{decl.source}</div>
             </div>)}
             {funcDecls.length > 0 && <h2>Functions</h2>}
-            {funcDecls.map(decl => <div key={decl.name}>
+            {funcDecls.map((decl: Declaration) => <div key={decl.name}>
                 <h3>{decl.name}</h3>
                 <div>{decl.source}</div>
+                {/* $FlowFixMe */}
                 <FunctionDecl node={decl.declaration} />
             </div>)}
         </div>;

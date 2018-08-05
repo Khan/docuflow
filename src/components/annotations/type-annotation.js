@@ -9,10 +9,10 @@ import NullableTypeAnnotation from "./nullable-type-annotation.js";
 import FunctionTypeAnnotation from "./function-type-annotation.js";
 import ExistsTypeAnnotation from "./exists-type-annotation.js";
 
-import type {TypeAnnotationT} from "./types.js";
+import type {Type} from "../../types/types.js";
 
 type Props = {
-    node: TypeAnnotationT,
+    node: Type,
 }
 
 export default class TypeAnnotation extends React.Component<Props> {

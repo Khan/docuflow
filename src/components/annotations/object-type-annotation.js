@@ -4,7 +4,7 @@ import {StyleSheet, css} from "aphrodite";
 
 import TypeAnnotation from "./type-annotation.js";
 
-import type {ObjectTypeAnnotationT} from "./types.js";
+import type {ObjectTypeAnnotationT} from "../../types/types.js";
 
 type Props = {
     node: ObjectTypeAnnotationT,

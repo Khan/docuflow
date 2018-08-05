@@ -1,14 +1,20 @@
 // @flow
+// TODO: split this up into separate files
+// TODO: use exact object types
 
 type CommentLine = {
     type: "CommentLine",
     value: string,
 }
 
-type Identifier = {
+type CommonProps = {
+    leadingComments?: Array<CommentLine>,
+}
+
+export type Identifier = CommonProps & {
     type: "Identifier",
     name: string,
-    typeAnnotation?: TypeAnnotationT,
+    typeAnnotation?: TypeAnnotation,
 }
 
 type QualifiedTypeIdentifier = {
@@ -17,26 +23,22 @@ type QualifiedTypeIdentifier = {
     id: Identifier,
 }
 
-type CommonProps = {
-    leadingComments?: Array<CommentLine>,
-}
-
 export type UnionTypeAnnotationT = CommonProps & {
     type: "UnionTypeAnnotation",
-    types: Array<TypeAnnotationT>,
+    types: Array<Type>,
 }
 
 type ObjectTypeProperty = CommonProps & {
     type: "ObjectTypeProperty",
     key: Identifier,
-    value: TypeAnnotationT,
+    value: Type,
     optional: boolean,
     method: boolean,
 }
 
 type ObjectTypeSpreadProperty = CommonProps & {
     type: "ObjectTypeSpreadProperty",
-    argument: TypeAnnotationT,
+    argument: Type,
 }
 
 export type ObjectTypeAnnotationT = CommonProps & {
@@ -52,7 +54,7 @@ export type StringLiteralTypeAnnotationT = CommonProps & {
 
 type TypeParameterInstantiation = {
     type: "TypeParameterInstantiation",
-    params: Array<TypeAnnotationT>,
+    params: Array<Type>,
 }
 
 export type GenericTypeAnnotationT = CommonProps & {
@@ -63,20 +65,20 @@ export type GenericTypeAnnotationT = CommonProps & {
 
 export type NullableTypeAnnotationT = CommonProps & {
     type: "NullableTypeAnnotation",
-    typeAnnotation: TypeAnnotationT,
+    typeAnnotation: Type,
 }
 
 type FunctionTypeParam = {
     type: "FunctionTypeParam",
     name: Identifier,
     optional: boolean,
-    typeAnnotation: TypeAnnotationT,
+    typeAnnotation: Type,
 }
 
 export type FunctionTypeAnnotationT = CommonProps & {
     type: "FunctionTypeAnnotation",
     params: Array<FunctionTypeParam>,
-    returnType: TypeAnnotationT,
+    returnType: Type,
 }
 
 export type ExistsTypeAnnotationT = CommonProps & {
@@ -92,7 +94,7 @@ type BlockStatement = {
 type TypeParameter = {
     type: "TypeParameter",
     name: string,
-    bound: TypeAnnotationT,
+    bound: TypeAnnotation,
 }
 
 type TypeParameterDeclaration = CommonProps & {
@@ -109,7 +111,59 @@ export type FunctionDeclaration = CommonProps & {
     typeParameters: TypeParameterDeclaration,
 }
 
-export type TypeAnnotationT =
+type MemberExpression = {
+    type: "MemberExpression",
+    object: MemberExpression | Identifier,
+    property: Identifier,
+}
+
+type ClassProperty = {
+    type: "ClassProperty",
+    key: Identifier,
+    computed: boolean,
+    value: any
+}
+
+type Pattern = any; // TODO
+
+type Function = {
+    id: ?Identifier,
+    params: Array<Pattern>,
+    body: BlockStatement,
+    generate: boolean,
+    async: boolean,
+};
+
+type Expression = any; // TODO
+
+type Decorator = any;
+
+type ClassMethod = Function & {
+    type: "ClassMethod",
+    key: Expression,
+    kind: "constructor" | "method" | "get" | "set",
+    computed: boolean,
+    static: boolean,
+    decorators: Array<Decorator>,
+}
+
+type ClassBody = {
+    type: "ClassBody",
+    body: Array<ClassMethod /*| ClassPrivateMethod*/ | ClassProperty /*| ClassPrivateProperty*/>;
+}
+
+export type ClassDeclaration = CommonProps & {
+    type: "ClassDeclaration",
+    body: ClassBody,
+    superClass: Identifier | MemberExpression,
+    superTypeParameters: TypeParameterInstantiation,
+}
+
+export type TypeAnnotation = {
+    typeAnnotation: Type,
+}
+
+export type Type =
     | UnionTypeAnnotationT
     | ObjectTypeAnnotationT
     | StringLiteralTypeAnnotationT
