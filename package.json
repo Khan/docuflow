@@ -11,6 +11,8 @@
     "@babel/preset-flow": "^7.0.0-beta.55",
     "@babel/preset-react": "^7.0.0-beta.55",
     "@babel/traverse": "^7.0.0-beta.55",
+    "@khanacademy/wonder-blocks-color": "^1.0.4",
+    "@khanacademy/wonder-blocks-core": "^1.0.4",
     "aphrodite": "^2.2.2",
     "babel-eslint": "^9.0.0-beta.3",
     "babel-loader": "^8.0.0-beta",
@@ -25,7 +27,8 @@
     "glob": "^7.1.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
-    "react-markdown": "^3.4.1"
+    "react-markdown": "^3.4.1",
+    "react-router-dom": "^4.3.1"
   },
   "devDependencies": {
     "flow-bin": "^0.77.0",

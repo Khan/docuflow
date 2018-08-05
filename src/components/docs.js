@@ -1,6 +1,8 @@
 // @flow
 import * as React from "react";
-import {StyleSheet, css} from "aphrodite";
+import {StyleSheet} from "aphrodite";
+import {View} from "@khanacademy/wonder-blocks-core";
+import Color from "@khanacademy/wonder-blocks-color";
 
 import Package from "./package.js";
 
@@ -9,59 +11,69 @@ const data = require("../../data/data.json");
 // eslint-disable-next-line no-console
 console.log(data);
 
-export default class Docs extends React.Component<{}> {
-    render() {
-        const names = Object.keys(data);
-        // const names = ["@khanacademy/wonder-blocks-core"];
+type Props = {};
+type State = {
+    package: string,
+}
 
-        return <div className={css(styles.container)}>
-            {names.map(name => {
-                const {declarations, files} = data[name];
-                return <Package 
-                    name={name}
+export default class Docs extends React.Component<Props, State> {
+    state = {
+        package: "wonder-blocks-core",
+    }
+
+    render() {
+        const names = Object.keys(data).map(name => name.replace("@khanacademy/", ""));
+        const {declarations, files} = data[`@khanacademy/${this.state.package}`];
+
+        return <View style={styles.container}>
+            <View style={styles.nav}>
+                <h3>Packages</h3>
+                {names.map(name => 
+                    <View 
+                        // TODO: use a router instead
+                        onClick={() => this.setState({package: name})}
+                        style={[
+                            styles.item,
+                            name === this.state.package && styles.selectedItem,
+                        ]}
+                    >
+                        {name}
+                    </View>
+                )}
+            </View>
+            <View style={styles.content}>
+                <Package 
+                    name={`@khanacademy/${this.state.package}`}
                     declarations={declarations}
                     files={files}
-                />;
-            })}
-        </div>;
+                />
+            </View>
+        </View>;
     }
 }
 
 const styles = StyleSheet.create({
     container: {
+        flexDirection: "row",
         fontFamily: "sans-serif",
-        // fontSize: 18,
     },
-    decl: {
-        marginBottom: 32,
+    nav: {
+        height: "100%",
+        flexShrink: 0,
+        paddingRight: 32,
+        position: "sticky",
+        top: 8,
     },
-    paragraph: {
-        marginBottom: 16,
+    content: {
+        flexGrow: 1,
     },
-    table: {
-        borderSpacing: 0,
-        borderCollapse: "collapse",
-    },
-    cell: {
-        verticalAlign: 'top',
-        maxWidth: 500,
-        padding: 8,
-        border: `solid 1px gray`,
-    },
-    th: {
-        textAlign: "left",
-    },
-    code: {
-        fontFamily: "monospace",
+    item: {
         fontSize: 16,
+        color: Color.offBlack50,
+        lineHeight: 1.3,
+        cursor: "pointer",
     },
-    markdown: {
-        marginTop: -16,
-        marginBottom: -16,
-    },
-    funcDecl: {
-        display: "inline-block",
-        border: `solid 1px gray`,
-        padding: 16,
+    selectedItem: {
+        color: Color.offBlack,
     },
 });

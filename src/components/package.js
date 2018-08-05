@@ -1,6 +1,8 @@
 // @flow
 import * as React from "react";
-import {StyleSheet, css} from "aphrodite";
+import {StyleSheet} from "aphrodite";
+import {View} from "@khanacademy/wonder-blocks-core";
+import Color from "@khanacademy/wonder-blocks-color";
 
 import PropsTable from "./props-table.js";
 import FunctionDecl from "./function-decl.js";
@@ -85,7 +87,7 @@ export default class Package extends React.Component<Props> {
             .filter(decl => isFunctionDeclaration(decl.declaration))
             .sort();
 
-        return <div>
+        return <View>
             <h1>{this.props.name}</h1>
             {componentDecls.length > 0 && <h2>Components</h2>}
             {componentDecls.map((decl: Declaration) => {
@@ -112,30 +114,36 @@ export default class Package extends React.Component<Props> {
                     }
                 }
 
-                return <div key={decl.name} className={css(styles.decl)}>
+                return <View key={decl.name} style={styles.decl}>
                     <h3>{decl.name}</h3>
-                    <div>{decl.source}</div>
+                    <View style={styles.source}>{decl.source}</View>
                     {propTypes && <PropsTable node={propTypes}/>}
-                </div>;
+                </View>;
             })}
             {classDecls.length > 0 && <h2>Classes</h2>}
-            {classDecls.map((decl: Declaration) => <div key={decl.name}>
-                <h3>{decl.name}</h3>
-                <div>{decl.source}</div>
-            </div>)}
+            {classDecls.map((decl: Declaration) => <View key={decl.name}>
+                <View style={styles.source}>{decl.source}</View>
+                <View>{decl.source}</View>
+            </View>)}
             {funcDecls.length > 0 && <h2>Functions</h2>}
-            {funcDecls.map((decl: Declaration) => <div key={decl.name}>
+            {funcDecls.map((decl: Declaration) => <View key={decl.name}>
                 <h3>{decl.name}</h3>
-                <div>{decl.source}</div>
+                <View style={styles.source}>{decl.source}</View>
                 {/* $FlowFixMe */}
                 <FunctionDecl node={decl.declaration} />
-            </div>)}
-        </div>;
+            </View>)}
+        </View>;
     }
 }
 
 const styles = StyleSheet.create({
     decl: {
         marginBottom: 32,
+    },
+    source: {
+        fontSize: 14,
+        color: Color.offBlack50,
+        marginTop: -16,
+        marginBottom: 16,
     },
 });

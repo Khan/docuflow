@@ -46,7 +46,7 @@ export default class PropsTable extends React.Component<{node: Type}> {
                         <TypeAnnotation node={prop.argument}/>
                     </td>
                     <td className={css(styles.cell, styles.code)} />
-                    <td className={css(styles.cell)} />
+                    <td className={css(styles.cell, styles.description)} />
                 </tr>;
             }
         });
@@ -81,7 +81,7 @@ export default class PropsTable extends React.Component<{node: Type}> {
                 <tr>
                     <th className={css(styles.th)}>prop</th>
                     <th className={css(styles.th)}>type</th>
-                    <th className={css(styles.th)}>description</th>
+                    <th className={css(styles.th, styles.description)}>description</th>
                 </tr>
                 {this.renderNode(node)}
             </tbody>
@@ -100,7 +100,11 @@ const styles = StyleSheet.create({
         padding: 8,
         border: `solid 1px gray`,
     },
+    description: {
+        minWidth: 200,
+    },
     th: {
+        paddingLeft: 8,
         textAlign: "left",
     },
     code: {
