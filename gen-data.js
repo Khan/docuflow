@@ -42,7 +42,7 @@ const processFile = (filename, data = {}) => {
     const importedTypes = {};
 
     traverse(ast, {
-        exit(p) {
+        enter(p) {
             if (p.isExportNamedDeclaration()) {
                 if (p.node.declaration) {
                     const declaration = p.node.declaration;
