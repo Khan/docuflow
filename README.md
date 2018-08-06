@@ -1,7 +1,9 @@
 # docuflow
 
 The goal of this project it to produce a tool for generating documentation for 
-npm packages based on flow types and markdown.
+npm packages based on flow types and markdown.  Although it supports documenting
+React components, it also handles documenting classes and functions and will
+eventually document anything that can be exported by an ES6 module.
 
 Documentation is generated based on what a package exports which means you don't 
 have to worry about excluding tests or files that internal to the module.
@@ -22,6 +24,13 @@ containing multiple packages.
 - yarn
 - node gen-data.js
 - yarn start
+
+## Requirements
+
+- all modules must be ES6 modules and use `import`/`export` statements exclusively
+  (no `require` or `module.exporst`)
+- use `flow` for annotating types directly in the code, `flow` (or `jsdoc`) aren't
+  supported
 
 ## Roadmap
 
