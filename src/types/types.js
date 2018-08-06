@@ -2,13 +2,18 @@
 // TODO: split this up into separate files
 // TODO: use exact object types
 
-type CommentLine = {
+export type CommentLine = {
     type: "CommentLine",
     value: string,
 }
 
+export type CommentBlock = {
+    type: "CommentBlock",
+    value: string,
+}
+
 type CommonProps = {
-    leadingComments?: Array<CommentLine>,
+    leadingComments?: Array<CommentLine | CommentBlock>,
 }
 
 export type Identifier = CommonProps & {

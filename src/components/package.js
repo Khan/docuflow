@@ -6,6 +6,7 @@ import Color from "@khanacademy/wonder-blocks-color";
 
 import PropsTable from "./props-table.js";
 import FunctionDecl from "./function-decl.js";
+import Comments from "./comments.js";
 
 import type {
     ObjectTypeAnnotationT,
@@ -114,9 +115,13 @@ export default class Package extends React.Component<Props> {
                     }
                 }
 
+                const {leadingComments} = decl.declaration;
+
                 return <View key={decl.name} style={styles.decl}>
                     <h3>{decl.name}</h3>
                     <View style={styles.source}>{decl.source}</View>
+                    {leadingComments && <Comments comments={leadingComments}/>}
+                    <h4>Props</h4>
                     {propTypes && <PropsTable node={propTypes}/>}
                 </View>;
             })}
@@ -126,12 +131,16 @@ export default class Package extends React.Component<Props> {
                 <View>{decl.source}</View>
             </View>)}
             {funcDecls.length > 0 && <h2>Functions</h2>}
-            {funcDecls.map((decl: Declaration) => <View key={decl.name}>
-                <h3>{decl.name}</h3>
-                <View style={styles.source}>{decl.source}</View>
-                {/* $FlowFixMe */}
-                <FunctionDecl node={decl.declaration} />
-            </View>)}
+            {funcDecls.map((decl: Declaration) => {
+                const {leadingComments} = decl.declaration;
+                return <View key={decl.name}>
+                    <h3>{decl.name}</h3>
+                    <View style={styles.source}>{decl.source}</View>
+                    {leadingComments && <Comments comments={leadingComments}/>}
+                    {/* $FlowFixMe */}
+                    <FunctionDecl node={decl.declaration} />
+                </View>;
+            })}
         </View>;
     }
 }

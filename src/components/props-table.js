@@ -1,9 +1,9 @@
 // @flow
 import * as React from "react";
 import {StyleSheet, css} from "aphrodite";
-import Markdown from "react-markdown";
 
 import TypeAnnotation from "./annotations/type-annotation.js";
+import Comments from "./comments.js";
 
 import type {
     ObjectTypeAnnotationT, 
@@ -23,20 +23,8 @@ export default class PropsTable extends React.Component<{node: Type}> {
                         <TypeAnnotation node={prop.value} />
                     </td>
                     <td className={css(styles.cell)}>
-                        {leadingComments && leadingComments.map(comment => {
-                            const lines = comment.value.split("\n")
-                                .map(line => line.replace(/^\s*\*/, ""));
-                            if (lines[0].trim() === "") {
-                                lines.shift();
-                            }
-                            if (lines[lines.length - 1].trim() === "") {
-                                lines.pop();
-                            }
-                            return <Markdown 
-                                className={css(styles.markdown)}
-                                source={lines.join("\n")}
-                            />;
-                        })}
+                        {leadingComments && 
+                            <Comments style={styles.markdown} comments={leadingComments}/>}
                     </td>
                 </tr>
             } else if (prop.type === "ObjectTypeSpreadProperty") {
@@ -79,7 +67,7 @@ export default class PropsTable extends React.Component<{node: Type}> {
         return <table className={css(styles.table)}>
             <tbody>
                 <tr>
-                    <th className={css(styles.th)}>prop</th>
+                    <th className={css(styles.th)}>name</th>
                     <th className={css(styles.th)}>type</th>
                     <th className={css(styles.th, styles.description)}>description</th>
                 </tr>

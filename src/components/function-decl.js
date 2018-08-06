@@ -1,9 +1,9 @@
 // @flow
 import * as React from "react";
 import {StyleSheet, css} from "aphrodite";
-import Markdown from "react-markdown";
 
 import TypeAnnotation from "./annotations/type-annotation.js";
+import Comments from "./comments.js"
 import intersperse from "../util/intersperse.js";
 
 import type {
@@ -25,8 +25,6 @@ export default class FunctionDecl extends React.Component<{node: FunctionDeclara
                 return param.name;
             }
         });
-
-        const {leadingComments} = node;
 
         return <div>
             <code className={css(styles.funcDecl)}>
@@ -52,19 +50,6 @@ export default class FunctionDecl extends React.Component<{node: FunctionDeclara
                 {intersperse(params, <span>, </span>)}
                 {")"}
             </code>
-            {leadingComments && leadingComments.map(comment => {
-                const lines = comment.value.split("\n")
-                    .map(line => line.replace(/^\s*\*/, ""));
-                if (lines[0].trim() === "") {
-                    lines.shift();
-                }
-                if (lines[lines.length - 1].trim() === "") {
-                    lines.pop();
-                }
-                return <Markdown 
-                    source={lines.join("\n")}
-                />;
-            })}
             <table className={css(styles.table)}>
                 <tbody>
                     <tr>
@@ -74,27 +59,14 @@ export default class FunctionDecl extends React.Component<{node: FunctionDeclara
                     </tr>
                     {node.params.map((param, index) => {
                         const {leadingComments} = param;
-                        return <tr className={css(styles.row)}>
+                        return <tr key={index} className={css(styles.row)}>
                             <td className={css(styles.cell, styles.code)}>{param.name}</td>
                             <td className={css(styles.cell, styles.code)}>
                                 {param.typeAnnotation &&
                                     <TypeAnnotation node={param.typeAnnotation.typeAnnotation} />}
                             </td>
                             <td className={css(styles.cell)}>
-                                {leadingComments && leadingComments.map(comment => {
-                                    const lines = comment.value.split("\n")
-                                        .map(line => line.replace(/^\s*\*/, ""));
-                                    if (lines[0].trim() === "") {
-                                        lines.shift();
-                                    }
-                                    if (lines[lines.length - 1].trim() === "") {
-                                        lines.pop();
-                                    }
-                                    return <Markdown 
-                                        className={css(styles.markdown)}
-                                        source={lines.join("\n")}
-                                    />;
-                                })}
+                                {leadingComments && <Comments style={styles.markdown} comments={leadingComments}/>}
                             </td>
                         </tr>;
                     })}
@@ -128,7 +100,7 @@ const styles = StyleSheet.create({
     },
     funcDecl: {
         display: "inline-block",
-        border: `solid 1px gray`,
-        padding: 16,
+        paddingTop: 16,
+        paddingBottom: 16,
     },
 });
