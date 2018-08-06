@@ -61,6 +61,7 @@ const processFile = (filename, data = {}) => {
                     const exported = specifier.exported.name;
                     const local = specifier.local.name
                     if (local === "default") {
+                        // e.g. export {default as Text} from "./components/text.js";
                         const source = p.node.source.value.startsWith(".")
                             ? path.join(dirname, p.node.source.value)
                             : p.node.source.value;
@@ -70,7 +71,7 @@ const processFile = (filename, data = {}) => {
                             imported: "default",
                         };
                     } else {
-                        exportedSymbols[local] = exported;
+                        exportedSymbols[exported] = local;
                     }
                 }
             } else if (p.isExportDefaultDeclaration()) {
@@ -136,7 +137,7 @@ const processFile = (filename, data = {}) => {
         importedTypes,
     };
 
-    for (const localName in exportedSymbols) {
+    for (const localName of Object.values(exportedSymbols)) {
         if (localName in importedSymbols) {
             const {source} = importedSymbols[localName];
             processFile(source, data);

@@ -100,7 +100,7 @@ export default class Package extends React.Component<Props> {
                 if (props.type === "GenericTypeAnnotation") {
                     const name = props.id.name;
                     const file = files[decl.source];
-                    propTypes = file.privateTypes[name];
+                    propTypes = file.privateTypes[name] || file.exportedTypes[name];
                     
                     // TODO(kevinb): make this recursive so that we can traverse
                     // multiple files to fine definitions
