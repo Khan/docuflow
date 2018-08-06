@@ -1,10 +1,39 @@
 // @flow
 import * as React from "react";
 import {StyleSheet} from "aphrodite";
-import {View} from "@khanacademy/wonder-blocks-core";
+import {View, addStyle} from "@khanacademy/wonder-blocks-core";
 import Color from "@khanacademy/wonder-blocks-color";
 
 import Package from "./package.js";
+
+import type {
+    FunctionDeclaration, 
+    ClassDeclaration,
+} from "../types/types.js";
+
+const StyledAnchor = addStyle("a");
+
+const isClassDeclaration = (node: any) => node && node.type === "ClassDeclaration";
+const isFunctionDeclaration = (node: any) => node && node.type === "FunctionDeclaration";
+const isComponent = (node: any) => {
+    if (!isClassDeclaration(node)) {
+        return false;
+    }
+
+    if (node.superClass) {
+        if (node.superClass.type === "MemberExpression") {
+            const {object, property} = node.superClass;
+            return (
+                object.type === "Identifier" && object.name === "React" && 
+                property.type === "Identifier" && property.name === "Component");
+        } else if (node.superClass.type === "Identifier") {
+            // TODO(kevinb): check that 'Component' was imported from "react"
+            return node.superClass.name === "Component";
+        }
+    }
+
+    return false;
+};
 
 const data = require("../../data/data.json");
 
@@ -16,9 +45,64 @@ type State = {
     package: string,
 }
 
+type Declaration = {
+    name: string,
+    source: string,
+    declaration: ClassDeclaration | FunctionDeclaration,
+};
+
 export default class Docs extends React.Component<Props, State> {
     state = {
         package: "wonder-blocks-core",
+    }
+
+    renderExports(declarations: Array<Declaration>, files: any) {
+        // $FlowFixMe
+        const componentDecls: Array<Declaration> = declarations
+            .filter(decl => isComponent(decl.declaration))
+            .sort();
+            
+        // $FlowFixMe
+        const classDecls: Array<Declaration> = declarations
+            .filter(decl => isClassDeclaration(decl.declaration) && !componentDecls.includes(decl))
+            .sort();
+
+        // $FlowFixMe
+        const funcDecls: Array<Declaration> = declarations
+            .filter(decl => isFunctionDeclaration(decl.declaration))
+            .sort();
+
+        return <React.Fragment>
+            {componentDecls.length > 0 &&
+                <View style={{fontWeight: "bold", paddingLeft: 16}}>
+                    <StyledAnchor style={styles.section} href="#Components">Components</StyledAnchor>
+                </View>}
+            {componentDecls.map(decl => 
+                <View style={{paddingLeft: 32}}>
+                    <StyledAnchor style={styles.anchor} href={`#${decl.name}`}>{decl.name}</StyledAnchor>
+                </View>)}
+            {componentDecls.length > 0 && <View style={{height: 8}}/>}
+
+            {classDecls.length > 0 &&
+                <View style={{fontWeight: "bold", paddingLeft: 16}}>
+                    <StyledAnchor style={styles.section} href="#Classes">Classes</StyledAnchor>
+                </View>}
+            {classDecls.map(decl => 
+                <View style={{paddingLeft: 32}}>
+                    <StyledAnchor style={styles.anchor} href={`#${decl.name}`}>{decl.name}</StyledAnchor>
+                </View>)}
+            {classDecls.length > 0 && <View style={{height: 8}}/>}
+
+            {funcDecls.length > 0 &&
+                <View style={{fontWeight: "bold", paddingLeft: 16}}>
+                    <StyledAnchor style={styles.section} href="#Functions">Functions</StyledAnchor>
+                </View>}
+            {funcDecls.map(decl => 
+                <View style={{paddingLeft: 32}}>
+                    <StyledAnchor style={styles.anchor} href={`#${decl.name}`}>{decl.name}</StyledAnchor>
+                </View>)}
+            {funcDecls.length > 0 && <View style={{height: 8}}/>}
+        </React.Fragment>
     }
 
     render() {
@@ -38,6 +122,8 @@ export default class Docs extends React.Component<Props, State> {
                         ]}
                     >
                         {name}
+                        {name === this.state.package &&
+                            this.renderExports(declarations, files)}
                     </View>
                 )}
             </View>
@@ -54,20 +140,24 @@ export default class Docs extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
     container: {
+        height: "100%",
         flexDirection: "row",
         fontFamily: "sans-serif",
+        paddingLeft: 8,
     },
     nav: {
         height: "100%",
         flexShrink: 0,
         paddingRight: 32,
-        position: "sticky",
-        top: 8,
+        overflow: "auto",
     },
     content: {
-        flexGrow: 1,
+        height: "100%",
+        overflow: "auto",
+        paddingRight: 8,
     },
     item: {
+        flexShrink: 0,
         fontSize: 16,
         color: Color.offBlack50,
         lineHeight: 1.3,
@@ -75,5 +165,15 @@ const styles = StyleSheet.create({
     },
     selectedItem: {
         color: Color.offBlack,
+    },
+    anchor: {
+        flexShrink: 0,
+        color: Color.offBlack50,
+        textDecoration: "none",
+    },
+    section: {
+        flexShrink: 0,
+        color: Color.offBlack,
+        textDecoration: "none",
     },
 });

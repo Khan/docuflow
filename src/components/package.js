@@ -88,9 +88,10 @@ export default class Package extends React.Component<Props> {
             .filter(decl => isFunctionDeclaration(decl.declaration))
             .sort();
 
-        return <View>
+        return <View style={styles.package}>
             <h1>{this.props.name}</h1>
-            {componentDecls.length > 0 && <h2>Components</h2>}
+            {componentDecls.length > 0 && 
+                <h2 id="Components" style={{marginBottom:0}}>Components</h2>}
             {componentDecls.map((decl: Declaration) => {
                 const props = getProps(decl.declaration);
                 if (!props) {
@@ -118,23 +119,25 @@ export default class Package extends React.Component<Props> {
                 const {leadingComments} = decl.declaration;
 
                 return <View key={decl.name} style={styles.decl}>
-                    <h3>{decl.name}</h3>
+                    <h3 id={decl.name}>{decl.name}</h3>
                     <View style={styles.source}>{decl.source}</View>
                     {leadingComments && <Comments comments={leadingComments}/>}
                     <h4>Props</h4>
                     {propTypes && <PropsTable node={propTypes}/>}
                 </View>;
             })}
-            {classDecls.length > 0 && <h2>Classes</h2>}
+            {classDecls.length > 0 && 
+                <h2 id="Classes" style={{marginBottom:0}}>Classes</h2>}
             {classDecls.map((decl: Declaration) => <View key={decl.name}>
                 <View style={styles.source}>{decl.source}</View>
                 <View>{decl.source}</View>
             </View>)}
-            {funcDecls.length > 0 && <h2>Functions</h2>}
+            {funcDecls.length > 0 && 
+                <h2 id="Functions"  style={{marginBottom:0}}>Functions</h2>}
             {funcDecls.map((decl: Declaration) => {
                 const {leadingComments} = decl.declaration;
                 return <View key={decl.name}>
-                    <h3>{decl.name}</h3>
+                    <h3 id={decl.name}>{decl.name}</h3>
                     <View style={styles.source}>{decl.source}</View>
                     {leadingComments && <Comments comments={leadingComments}/>}
                     {/* $FlowFixMe */}
@@ -146,6 +149,9 @@ export default class Package extends React.Component<Props> {
 }
 
 const styles = StyleSheet.create({
+    package: {
+        flexShrink: 0,
+    },
     decl: {
         marginBottom: 32,
     },
@@ -154,5 +160,8 @@ const styles = StyleSheet.create({
         color: Color.offBlack50,
         marginTop: -16,
         marginBottom: 16,
+    },
+    section: {
+        marginBottom: 0,
     },
 });
