@@ -116,6 +116,26 @@ export type FunctionDeclaration = CommonProps & {
     typeParameters: TypeParameterDeclaration,
 }
 
+export type VariableDeclarator = CommonProps & {
+    type: "VariableDeclarator",
+    id: Identifier,
+    init: ObjectExpression, // TODO: handle other values
+}
+
+type ObjectProperty = CommonProps & {
+    type: "ObjectProperty",
+    method: boolean,
+    key: Identifier,  // TODO: handle computed properties
+    computed: false,  // TODO: handle computed properties
+    shorthand: boolean,
+    value: any,  // TODO: compute the values by having gen-data.js import the component
+};
+
+export type ObjectExpression = CommonProps & {
+    type: "ObjectExpression",
+    properties: Array<ObjectProperty>,
+}
+
 type MemberExpression = {
     type: "MemberExpression",
     object: MemberExpression | Identifier,

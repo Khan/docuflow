@@ -13,6 +13,7 @@ import type {
     GenericTypeAnnotationT,
     FunctionDeclaration, 
     ClassDeclaration,
+    ObjectExpression,
 } from "../types/types.js";
 
 const isClassDeclaration = (node: any) => node && node.type === "ClassDeclaration";
@@ -36,6 +37,9 @@ const isComponent = (node: any) => {
 
     return false;
 };
+const isVariableDeclarator = (node: any) => node && node.type === "VariableDeclarator";
+const isObjectExpression = (node: any) => node && node.type === "ObjectExpression";
+const isArrowFunctionExpression = (node: any) => node && node.type === "ArrowFunctionExpression";
 
 const getProps = (node: any): ?(ObjectTypeAnnotationT | GenericTypeAnnotationT) => {
     if (!isComponent(node)) {
@@ -67,7 +71,7 @@ type Props = {
 type Declaration = {
     name: string,
     source: string,
-    declaration: ClassDeclaration | FunctionDeclaration,
+    declaration: ClassDeclaration | FunctionDeclaration | ObjectExpression,
 };
 export default class Package extends React.Component<Props> {
     render() {
@@ -88,8 +92,14 @@ export default class Package extends React.Component<Props> {
             .filter(decl => isFunctionDeclaration(decl.declaration))
             .sort();
 
+        // $FlowFixMe
+        const varDecls: Array<Declaration> = declarations
+            .filter(decl => isVariableDeclarator(decl.declaration))
+            .sort();
+
         return <View style={styles.package}>
             <h1>{this.props.name}</h1>
+
             {componentDecls.length > 0 && 
                 <h2 id="Components" style={{marginBottom:0}}>Components</h2>}
             {componentDecls.map((decl: Declaration) => {
@@ -126,14 +136,16 @@ export default class Package extends React.Component<Props> {
                     {propTypes && <PropsTable node={propTypes}/>}
                 </View>;
             })}
+
             {classDecls.length > 0 && 
                 <h2 id="Classes" style={{marginBottom:0}}>Classes</h2>}
             {classDecls.map((decl: Declaration) => <View key={decl.name}>
                 <View style={styles.source}>{decl.source}</View>
                 <View>{decl.source}</View>
             </View>)}
+
             {funcDecls.length > 0 && 
-                <h2 id="Functions"  style={{marginBottom:0}}>Functions</h2>}
+                <h2 id="Functions" style={{marginBottom:0}}>Functions</h2>}
             {funcDecls.map((decl: Declaration) => {
                 const {leadingComments} = decl.declaration;
                 return <View key={decl.name}>
@@ -142,6 +154,29 @@ export default class Package extends React.Component<Props> {
                     {leadingComments && <Comments comments={leadingComments}/>}
                     {/* $FlowFixMe */}
                     <FunctionDecl node={decl.declaration} />
+                </View>;
+            })}
+
+            {varDecls.length > 0 && 
+                <h2 id="Variables" style={{marginBottom:0}}>Variables</h2>}
+            {varDecls.map((decl: Declaration) => {
+                // $FlowFixMe
+                const {leadingComments} = decl.declaration;
+                return <View key={decl.name}>
+                    <h3 id={decl.name}>{decl.name}</h3>
+                    <View style={styles.source}>{decl.source}</View>
+                    {leadingComments && <Comments comments={leadingComments}/>}
+                    {isObjectExpression(decl.declaration.init) &&
+                        <View style={styles.obj}>
+                            <View>{"{"}</View>
+                                {decl.declaration.init.properties.map((objProp, i) => 
+                                    <View key={i} style={styles.prop}>{objProp.key.name}{","}</View>)}
+                            <View>{"}"}</View>
+                        </View>}
+                    {isArrowFunctionExpression(decl.declaration.init) &&
+                        <View style={styles.func}>
+                            <FunctionDecl node={decl.declaration.init} name={decl.declaration.id.name} />
+                        </View>}
                 </View>;
             })}
         </View>;
@@ -163,5 +198,15 @@ const styles = StyleSheet.create({
     },
     section: {
         marginBottom: 0,
+    },
+    prop: {
+        marginLeft: 32,
+    },
+    obj: {
+        fontFamily: "monospace",
+        fontSize: 16,
+    },
+    func: {
+
     },
 });

@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
         verticalAlign: 'top',
         maxWidth: 500,
         padding: 8,
-        border: `solid 1px gray`,
+        border: `solid 1px lightgray`,
     },
     description: {
         minWidth: 200,

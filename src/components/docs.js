@@ -9,6 +9,7 @@ import Package from "./package.js";
 import type {
     FunctionDeclaration, 
     ClassDeclaration,
+    ObjectExpression,
 } from "../types/types.js";
 
 const StyledAnchor = addStyle("a");
@@ -34,6 +35,7 @@ const isComponent = (node: any) => {
 
     return false;
 };
+const isVariableDeclarator = (node: any) => node && node.type === "VariableDeclarator";
 
 const data = require("../../data/data.json");
 
@@ -48,7 +50,7 @@ type State = {
 type Declaration = {
     name: string,
     source: string,
-    declaration: ClassDeclaration | FunctionDeclaration,
+    declaration: ClassDeclaration | FunctionDeclaration | ObjectExpression,
 };
 
 export default class Docs extends React.Component<Props, State> {
@@ -70,6 +72,11 @@ export default class Docs extends React.Component<Props, State> {
         // $FlowFixMe
         const funcDecls: Array<Declaration> = declarations
             .filter(decl => isFunctionDeclaration(decl.declaration))
+            .sort();
+
+        // $FlowFixMe
+        const varDecls: Array<Declaration> = declarations
+            .filter(decl => isVariableDeclarator(decl.declaration))
             .sort();
 
         return <React.Fragment>
@@ -102,6 +109,16 @@ export default class Docs extends React.Component<Props, State> {
                     <StyledAnchor style={styles.anchor} href={`#${decl.name}`}>{decl.name}</StyledAnchor>
                 </View>)}
             {funcDecls.length > 0 && <View style={{height: 8}}/>}
+
+            {varDecls.length > 0 &&
+                <View style={{fontWeight: "bold", paddingLeft: 16}}>
+                    <StyledAnchor style={styles.section} href="#Objects">Objects</StyledAnchor>
+                </View>}
+            {varDecls.map(decl => 
+                <View style={{paddingLeft: 32}}>
+                    <StyledAnchor style={styles.anchor} href={`#${decl.name}`}>{decl.name}</StyledAnchor>
+                </View>)}
+            {varDecls.length > 0 && <View style={{height: 8}}/>}
         </React.Fragment>
     }
 
@@ -155,6 +172,7 @@ const styles = StyleSheet.create({
         height: "100%",
         overflow: "auto",
         paddingRight: 8,
+        flexGrow: 1,
     },
     item: {
         flexShrink: 0,

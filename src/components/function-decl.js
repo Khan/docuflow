@@ -10,9 +10,9 @@ import type {
     FunctionDeclaration, 
 } from "../types/types.js";
 
-export default class FunctionDecl extends React.Component<{node: FunctionDeclaration}> {
+export default class FunctionDecl extends React.Component<{node: FunctionDeclaration, name?: string}> {
     render() {
-        const {node} = this.props;
+        const {node, name} = this.props;
 
         const params = node.params.map(param => {
             if (param.typeAnnotation) {
@@ -31,6 +31,7 @@ export default class FunctionDecl extends React.Component<{node: FunctionDeclara
                 {"function"}
                 {" "}
                 {node.id && node.id.name}
+                {name}
                 {node.typeParameters && <span>
                     {"<"}
                     {node.typeParameters.params.map(param => {
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
         verticalAlign: 'top',
         maxWidth: 500,
         padding: 8,
-        border: `solid 1px gray`,
+        border: `solid 1px lightgray`,
     },
     th: {
         textAlign: "left",

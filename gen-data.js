@@ -37,9 +37,10 @@ const processFile = (filename, data = {}) => {
 
     const exportedSymbols = {};
     const importedSymbols = {};
-    const privateTypes = {};
+    const privateSymbols = {};
     const exportedTypes = {};
     const importedTypes = {};
+    const privateTypes = {};
 
     traverse(ast, {
         enter(p) {
@@ -47,7 +48,10 @@ const processFile = (filename, data = {}) => {
                 if (p.node.declaration) {
                     const declaration = p.node.declaration;
                     if (declaration.type === "VariableDeclaration") {
-                        // TODO(kevinb): handle variable declarations
+                        for (const declarator of declaration.declarations) {
+                            const name = declarator.id.name;
+                            exportedSymbols[name] = declarator;
+                        }
                     } else {
                         const name = declaration.id.name;
                         if (p.node.exportKind === "value") {
@@ -122,6 +126,11 @@ const processFile = (filename, data = {}) => {
             } else if (p.isTypeAlias() && p.parentPath.isExportNamedDeclaration()) {
                 const typeName = p.node.id.name;
                 exportedTypes[typeName] = p.node.right;
+            } else if (p.isVariableDeclaration() && p.parentPath.isProgram()) {
+                for (const declarator of p.node.declarations) {
+                    const local = declarator.id.name;
+                    privateSymbols[local] = declarator;
+                }
             }
             delete p.node.start;
             delete p.node.end;
@@ -132,9 +141,10 @@ const processFile = (filename, data = {}) => {
     data[filename] = {
         exportedSymbols,
         importedSymbols,
-        privateTypes,
+        privateSymbols,
         exportedTypes,
         importedTypes,
+        privateTypes,
     };
 
     for (const localName of Object.values(exportedSymbols)) {
@@ -158,7 +168,7 @@ const processFile = (filename, data = {}) => {
 const output = {};
 
 const findDeclaration = (name, file, files) => {
-    const {importedSymbols, exportedSymbols} = files[file];
+    const {importedSymbols, exportedSymbols, privateSymbols} = files[file];
     if (name in exportedSymbols) {
         if (typeof(exportedSymbols[name]) !== "string") {
             return {
@@ -174,11 +184,15 @@ const findDeclaration = (name, file, files) => {
                 importObj.source, 
                 files,
             );
-        } else {
-            console.error(`${name} symbol not found`);
-            // throw new Error("symbol not found");
+        } else if (local in privateSymbols) {
+            return {
+                declaration: privateSymbols[local],
+                source: file,
+            };
         }
     }
+
+    console.error(`${name} symbol not found`);
 }
 
 // TODO(kevinb): also exports types from files
