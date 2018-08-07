@@ -157,6 +157,7 @@ export default class Package extends React.Component<Props> {
                 </View>;
             })}
 
+            {/* TODO: split variables up based on type */}
             {varDecls.length > 0 && 
                 <h2 id="Variables" style={{marginBottom:0}}>Variables</h2>}
             {varDecls.map((decl: Declaration) => {

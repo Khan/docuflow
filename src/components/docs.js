@@ -112,7 +112,7 @@ export default class Docs extends React.Component<Props, State> {
 
             {varDecls.length > 0 &&
                 <View style={{fontWeight: "bold", paddingLeft: 16}}>
-                    <StyledAnchor style={styles.section} href="#Objects">Objects</StyledAnchor>
+                    <StyledAnchor style={styles.section} href="#Variables">Variables</StyledAnchor>
                 </View>}
             {varDecls.map(decl => 
                 <View style={{paddingLeft: 32}}>
