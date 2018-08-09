@@ -8,6 +8,15 @@ import PropsTable from "./props-table.js";
 import FunctionDecl from "./function-decl.js";
 import Comments from "./comments.js";
 
+import {
+    isClassDeclaration,
+    isFunctionDeclaration,
+    isComponent,
+    isVariableDeclarator,
+    isObjectExpression,
+    isArrowFunctionExpression,
+} from "../util/ast-helpers.js";
+
 import type {
     ObjectTypeAnnotationT,
     GenericTypeAnnotationT,
@@ -15,31 +24,6 @@ import type {
     ClassDeclaration,
     ObjectExpression,
 } from "../types/types.js";
-
-const isClassDeclaration = (node: any) => node && node.type === "ClassDeclaration";
-const isFunctionDeclaration = (node: any) => node && node.type === "FunctionDeclaration";
-const isComponent = (node: any) => {
-    if (!isClassDeclaration(node)) {
-        return false;
-    }
-
-    if (node.superClass) {
-        if (node.superClass.type === "MemberExpression") {
-            const {object, property} = node.superClass;
-            return (
-                object.type === "Identifier" && object.name === "React" && 
-                property.type === "Identifier" && property.name === "Component");
-        } else if (node.superClass.type === "Identifier") {
-            // TODO(kevinb): check that 'Component' was imported from "react"
-            return node.superClass.name === "Component";
-        }
-    }
-
-    return false;
-};
-const isVariableDeclarator = (node: any) => node && node.type === "VariableDeclarator";
-const isObjectExpression = (node: any) => node && node.type === "ObjectExpression";
-const isArrowFunctionExpression = (node: any) => node && node.type === "ArrowFunctionExpression";
 
 const getProps = (node: any): ?(ObjectTypeAnnotationT | GenericTypeAnnotationT) => {
     if (!isComponent(node)) {
@@ -96,6 +80,20 @@ export default class Package extends React.Component<Props> {
         const varDecls: Array<Declaration> = declarations
             .filter(decl => isVariableDeclarator(decl.declaration))
             .sort();
+
+        // TODO(kevinb): more robust handling of type casts and their inner expressions
+        declarations.filter(decl => decl.declaration && decl.declaration.type === "TypeCastExpression").map(decl => {
+            // $FlowFixMe
+            varDecls.push(Object.assign(
+                {},
+                decl,
+                {declaration: {
+                    type: "VariableDeclarator",
+                    // $FlowFixMe: pretend to be a variable declarator
+                    init: decl.declaration.expression,
+                }},
+            ));
+        });
 
         return <View style={styles.package}>
             <h1>{this.props.name}</h1>

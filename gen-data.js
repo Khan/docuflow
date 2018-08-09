@@ -79,7 +79,11 @@ const processFile = (filename, data = {}) => {
                     }
                 }
             } else if (p.isExportDefaultDeclaration()) {
-                exportedSymbols["default"] = p.node.declaration;
+                if (p.node.declaration.type !== "Identifier") {
+                    exportedSymbols["default"] = p.node.declaration;
+                } else {
+                    exportedSymbols["default"] = p.node.declaration.name;
+                }
                 if (p.node.leadingComments) {
                     exportedSymbols["default"].leadingComments = p.node.leadingComments;
                 }

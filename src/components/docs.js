@@ -6,6 +6,13 @@ import Color from "@khanacademy/wonder-blocks-color";
 
 import Package from "./package.js";
 
+import {
+    isClassDeclaration,
+    isFunctionDeclaration,
+    isComponent,
+    isVariableDeclarator,
+} from "../util/ast-helpers.js";
+
 import type {
     FunctionDeclaration, 
     ClassDeclaration,
@@ -13,29 +20,6 @@ import type {
 } from "../types/types.js";
 
 const StyledAnchor = addStyle("a");
-
-const isClassDeclaration = (node: any) => node && node.type === "ClassDeclaration";
-const isFunctionDeclaration = (node: any) => node && node.type === "FunctionDeclaration";
-const isComponent = (node: any) => {
-    if (!isClassDeclaration(node)) {
-        return false;
-    }
-
-    if (node.superClass) {
-        if (node.superClass.type === "MemberExpression") {
-            const {object, property} = node.superClass;
-            return (
-                object.type === "Identifier" && object.name === "React" && 
-                property.type === "Identifier" && property.name === "Component");
-        } else if (node.superClass.type === "Identifier") {
-            // TODO(kevinb): check that 'Component' was imported from "react"
-            return node.superClass.name === "Component";
-        }
-    }
-
-    return false;
-};
-const isVariableDeclarator = (node: any) => node && node.type === "VariableDeclarator";
 
 const data = require("../../data/data.json");
 
@@ -78,6 +62,16 @@ export default class Docs extends React.Component<Props, State> {
         const varDecls: Array<Declaration> = declarations
             .filter(decl => isVariableDeclarator(decl.declaration))
             .sort();
+        
+        // TODO(kevinb): more robust handling of type casts and their inner expressions
+        declarations.filter(decl => decl.declaration && decl.declaration.type === "TypeCastExpression").map(decl => {
+            varDecls.push(Object.assign(
+                {},
+                decl,
+                // $FlowFixMe
+                {declaration: decl.declaration.expression},
+            ));
+        });
 
         return <React.Fragment>
             {componentDecls.length > 0 &&
