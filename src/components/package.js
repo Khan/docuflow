@@ -186,7 +186,7 @@ export default class Package extends React.Component<Props> {
             })}
 
             {typeDecls.length > 0 && 
-                <h2 id="Types" style={{marginBottom:0}}>Functions</h2>}
+                <h2 id="Types" style={{marginBottom:0}}>Types</h2>}
             {typeDecls.map((decl: Declaration) => {
                 const {leadingComments} = decl.declaration;
                 return <View key={decl.name}>
