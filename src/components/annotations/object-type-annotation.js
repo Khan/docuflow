@@ -50,5 +50,7 @@ const styles = StyleSheet.create({
         margin: 0,
         padding: "0 0 0 40px",
         listStyleType: "none",
+        fontFamily: "monospace",
+        fontSize: 16,
     },
 });
