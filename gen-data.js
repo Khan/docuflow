@@ -75,7 +75,11 @@ const processFile = (filename, data = {}) => {
                             imported: "default",
                         };
                     } else {
-                        exportedSymbols[exported] = local;
+                        if (p.node.exportKind === "value") {
+                            exportedSymbols[exported] = local;
+                        } else if (p.node.exportKind === "type") {
+                            exportedTypes[exported] = local;
+                        }
                     }
                 }
             } else if (p.isExportDefaultDeclaration()) {
@@ -158,6 +162,7 @@ const processFile = (filename, data = {}) => {
         }
     }
 
+    // Find all imported types b/c they might be used by the exported symbols
     Object.keys(importedTypes).forEach(name => {
         const {source} = importedTypes[name];
         // TODO(kevinb): handle imports of types from other packages we know about
@@ -205,20 +210,22 @@ const findType = (name, file, files) => {
     if (name in exportedTypes) {
         if (typeof(exportedTypes[name]) !== "string") {
             return {
-                type: exportedTypes[name],
+                // we return the same type as findDeclaration to make processing
+                // easier in the client code
+                declaration: exportedTypes[name],
                 source: file,
             };
         }
         const local = exportedTypes[name];
         if (local in importedTypes) {
             const importObj = importedTypes[local];
-            return findtype(
+            return findType(
                 importObj.imported, 
                 importObj.source, 
                 files,
             );
         } else {
-            console.error(`${name} symbol not found`);
+            console.error(`${name} type not found`);
             // throw new Error("symbol not found");
         }
     }
@@ -238,6 +245,13 @@ for (const pkg of packages) {
         declarations.push({
             ...declaration,
             name: symbol,
+        });
+    }
+    for (const type of Object.keys(files[entry].exportedTypes)) {
+        const declaration = findType(type, entry, files);
+        declarations.push({
+            ...declaration,
+            name: type,
         });
     }
 

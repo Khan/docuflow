@@ -7,6 +7,7 @@ import Color from "@khanacademy/wonder-blocks-color";
 import PropsTable from "./props-table.js";
 import FunctionDecl from "./function-decl.js";
 import Comments from "./comments.js";
+import TypeAnnotation from "./annotations/type-annotation.js";
 
 import {
     isClassDeclaration,
@@ -15,6 +16,7 @@ import {
     isVariableDeclarator,
     isObjectExpression,
     isArrowFunctionExpression,
+    isType,
 } from "../util/ast-helpers.js";
 
 import type {
@@ -94,6 +96,10 @@ export default class Package extends React.Component<Props> {
                 }},
             ));
         });
+
+        const typeDecls: Array<Declaration> = declarations
+            .filter(decl => isType(decl.declaration))
+            .sort();
 
         return <View style={styles.package}>
             <h1>{this.props.name}</h1>
@@ -176,6 +182,19 @@ export default class Package extends React.Component<Props> {
                         <View style={styles.func}>
                             <FunctionDecl node={decl.declaration.init} name={decl.declaration.id.name} />
                         </View>}
+                </View>;
+            })}
+
+            {typeDecls.length > 0 && 
+                <h2 id="Types" style={{marginBottom:0}}>Functions</h2>}
+            {typeDecls.map((decl: Declaration) => {
+                const {leadingComments} = decl.declaration;
+                return <View key={decl.name}>
+                    <h3 id={decl.name}>{decl.name}</h3>
+                    <View style={styles.source}>{decl.source}</View>
+                    {leadingComments && <Comments comments={leadingComments}/>}
+                    {/* $FlowFixMe */}
+                    <TypeAnnotation node={decl.declaration} />
                 </View>;
             })}
         </View>;

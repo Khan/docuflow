@@ -25,3 +25,4 @@ export const isComponent = (node: any) => {
 export const isVariableDeclarator = (node: any) => node && node.type === "VariableDeclarator";
 export const isObjectExpression = (node: any) => node && node.type === "ObjectExpression";
 export const isArrowFunctionExpression = (node: any) => node && node.type === "ArrowFunctionExpression";
+export const isType = (node: any) => node && node.type.endsWith("TypeAnnotation");

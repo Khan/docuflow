@@ -11,6 +11,7 @@ import {
     isFunctionDeclaration,
     isComponent,
     isVariableDeclarator,
+    isType,
 } from "../util/ast-helpers.js";
 
 import type {
@@ -73,6 +74,10 @@ export default class Docs extends React.Component<Props, State> {
             ));
         });
 
+        const typeDecls: Array<Declaration> = declarations
+            .filter(decl => isType(decl.declaration))
+            .sort();
+
         return <React.Fragment>
             {componentDecls.length > 0 &&
                 <View style={{fontWeight: "bold", paddingLeft: 16}}>
@@ -113,6 +118,16 @@ export default class Docs extends React.Component<Props, State> {
                     <StyledAnchor style={styles.anchor} href={`#${decl.name}`}>{decl.name}</StyledAnchor>
                 </View>)}
             {varDecls.length > 0 && <View style={{height: 8}}/>}
+
+            {typeDecls.length > 0 &&
+                <View style={{fontWeight: "bold", paddingLeft: 16}}>
+                    <StyledAnchor style={styles.section} href="#Types">Types</StyledAnchor>
+                </View>}
+            {typeDecls.map(decl => 
+                <View style={{paddingLeft: 32}}>
+                    <StyledAnchor style={styles.anchor} href={`#${decl.name}`}>{decl.name}</StyledAnchor>
+                </View>)}
+            {typeDecls.length > 0 && <View style={{height: 8}}/>}
         </React.Fragment>
     }
 

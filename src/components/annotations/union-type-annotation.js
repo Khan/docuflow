@@ -14,8 +14,8 @@ export default class UnionTypeAnnotation extends React.Component<Props> {
     render() {
         const {node} = this.props;
         const types = node.types.map(t => <TypeAnnotation node={t} />);
-        return <React.Fragment>
+        return <span>
             {intersperse(types, <span> | </span>)}
-        </React.Fragment>
+        </span>
     }
 }

@@ -46,6 +46,11 @@ type ObjectTypeSpreadProperty = CommonProps & {
     argument: Type,
 }
 
+export type TypeofTypeAnnotationT = CommonProps & {
+    type: "TypeofTypeAnnotation",
+    argument: Type,
+}
+
 export type ObjectTypeAnnotationT = CommonProps & {
     type: "ObjectTypeAnnotation",
     properties: Array<ObjectTypeProperty | ObjectTypeSpreadProperty>,
@@ -55,6 +60,11 @@ export type ObjectTypeAnnotationT = CommonProps & {
 export type StringLiteralTypeAnnotationT = CommonProps & {
     type: "StringLiteralTypeAnnotation",
     value: string,
+}
+
+export type NumberLiteralTypeAnnotationT = CommonProps & {
+    type: "NumberLiteralTypeAnnotation",
+    value: number,
 }
 
 type TypeParameterInstantiation = {

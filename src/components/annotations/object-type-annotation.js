@@ -19,9 +19,15 @@ export default class UnionTypeAnnotation extends React.Component<Props> {
                 {node.properties.map((prop, index) => {
                     const {leadingComments} = prop;
                     if (prop.type === "ObjectTypeProperty") {
+                        let key = "";
+                        if (prop.key.type === "StringLiteral") {
+                            key = `"${prop.key.value}"`;
+                        } else if (prop.key.type === "Identifier") {
+                            key = prop.key.name;
+                        }
                         return <li>
                             {leadingComments && leadingComments.map(comment => <div>// {comment.value}</div>)}
-                            {`${prop.key.name}${prop.optional ? "?" : ""}: `}
+                            {`${key}${prop.optional ? "?" : ""}: `}
                             <TypeAnnotation node={prop.value} />
                             {","}
                         </li>

@@ -4,10 +4,12 @@ import * as React from "react";
 import UnionTypeAnnotation from "./union-type-annotation.js";
 import ObjectTypeAnnotation from "./object-type-annotation.js";
 import StringLiteralAnnotation from "./string-literal-type-annotation.js";
+import NumberLiteralAnnotation from "./number-literal-type-annotation.js";
 import GenericTypeAnnotation from "./generic-type-annotation.js";
 import NullableTypeAnnotation from "./nullable-type-annotation.js";
 import FunctionTypeAnnotation from "./function-type-annotation.js";
 import ExistsTypeAnnotation from "./exists-type-annotation.js";
+import TypeofTypeAnnotation from "./typeof-type-annotation.js";
 
 import type {Type} from "../../types/types.js";
 
@@ -26,6 +28,8 @@ export default class TypeAnnotation extends React.Component<Props> {
                 return <ObjectTypeAnnotation node={node} />;
             case "StringLiteralTypeAnnotation":
                 return <StringLiteralAnnotation node={node} />;
+            case "NumberLiteralTypeAnnotation":
+                return <NumberLiteralAnnotation node={node} />;
             case "GenericTypeAnnotation":
                 return <GenericTypeAnnotation node={node} />;
             case "NullableTypeAnnotation":
@@ -34,6 +38,8 @@ export default class TypeAnnotation extends React.Component<Props> {
                 return <FunctionTypeAnnotation node={node} />;
             case "ExistsTypeAnnotation":
                 return <ExistsTypeAnnotation node={node} />;
+            case "TypeofTypeAnnotation":
+                return <TypeofTypeAnnotation node={node} />;
 
             case "AnyTypeAnnotation":
                 return "any";
