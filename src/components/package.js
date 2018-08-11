@@ -27,19 +27,65 @@ import type {
     ObjectExpression,
 } from "../types/types.js";
 
-const getProps = (node: any): ?(ObjectTypeAnnotationT | GenericTypeAnnotationT) => {
+const getProps = (decl: Declaration, files: any): {
+    propTypes: ?(ObjectTypeAnnotationT | GenericTypeAnnotationT),
+    defaultProps: ?ObjectExpression,
+ } => {
+    const node = decl.declaration;
     if (!isComponent(node)) {
-        return null;
+        return {
+            propTypes: null,
+            defaultProps: null,
+        };
     }
 
     if (node.superTypeParameters) {
         const {params} = node.superTypeParameters;
         if (Array.isArray(params)) {
-            return params[0];
+            const props = params[0];
+
+            let propTypes = null;
+            if (props.type === "GenericTypeAnnotation") {
+                const name = props.id.name;
+                const file = files[decl.source];
+                propTypes = file.privateTypes[name] || file.exportedTypes[name];
+                
+                // TODO(kevinb): make this recursive so that we can traverse
+                // multiple files to fine definitions
+                if (!propTypes) {
+                    if (name in file.importedTypes) {
+                        const importedFile = files[file.importedTypes[name].source];
+                        if (name in importedFile.exportedTypes) {
+                            propTypes = importedFile.exportedTypes[name];
+                        }
+                    }
+                }
+            }
+            
+            let defaultProps = null;
+            // node.body is a ClassBody
+            for (const child of node.body.body) {
+                if (child.type === "ClassProperty" && child.key.type === "Identifier" &&
+                        child.key.name === "defaultProps") {
+                    defaultProps = child.value;
+                }
+            }
+
+            // TODO(kevinb): handle defaultProps that is an identifier
+            if (defaultProps && defaultProps.type !== "ObjectExpression") {
+                throw new Error("defaultProps must be an object expresison");
+            }
+            return {
+                propTypes,
+                defaultProps,
+            };
         }
     }
 
-    return null;
+    return {
+        propTypes: null,
+        defaultProps: null,
+    };
 }
 
 type Props = {
@@ -97,6 +143,7 @@ export default class Package extends React.Component<Props> {
             ));
         });
 
+        // $FlowFixMe
         const typeDecls: Array<Declaration> = declarations
             .filter(decl => isType(decl.declaration))
             .sort();
@@ -107,29 +154,7 @@ export default class Package extends React.Component<Props> {
             {componentDecls.length > 0 && 
                 <h2 id="Components" style={{marginBottom:0}}>Components</h2>}
             {componentDecls.map((decl: Declaration) => {
-                const props = getProps(decl.declaration);
-                if (!props) {
-                    return null;
-                }
-
-                let propTypes = null;
-                if (props.type === "GenericTypeAnnotation") {
-                    const name = props.id.name;
-                    const file = files[decl.source];
-                    propTypes = file.privateTypes[name] || file.exportedTypes[name];
-                    
-                    // TODO(kevinb): make this recursive so that we can traverse
-                    // multiple files to fine definitions
-                    if (!propTypes) {
-                        if (name in file.importedTypes) {
-                            const importedFile = files[file.importedTypes[name].source];
-                            if (name in importedFile.exportedTypes) {
-                                propTypes = importedFile.exportedTypes[name];
-                            }
-                        }
-                    }
-                }
-
+                const {propTypes, defaultProps} = getProps(decl, files);
                 const {leadingComments} = decl.declaration;
 
                 return <View key={decl.name} style={styles.decl}>
@@ -137,7 +162,7 @@ export default class Package extends React.Component<Props> {
                     <View style={styles.source}>{decl.source}</View>
                     {leadingComments && <Comments comments={leadingComments}/>}
                     <h4>Props</h4>
-                    {propTypes && <PropsTable node={propTypes}/>}
+                    {propTypes && <PropsTable propTypes={propTypes} defaultProps={defaultProps}/>}
                 </View>;
             })}
 

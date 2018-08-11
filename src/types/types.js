@@ -132,7 +132,7 @@ export type VariableDeclarator = CommonProps & {
     init: ObjectExpression, // TODO: handle other values
 }
 
-type ObjectProperty = CommonProps & {
+export type ObjectProperty = CommonProps & {
     type: "ObjectProperty",
     method: boolean,
     key: Identifier,  // TODO: handle computed properties
