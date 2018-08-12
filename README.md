@@ -22,7 +22,7 @@ containing multiple packages.
 
 - git submodule update --init --recursive
 - yarn
-- node gen-data.js
+- node tools/gen-data.js
 - yarn start
 
 ## Requirements

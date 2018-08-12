@@ -22,7 +22,7 @@ import type {
 
 const StyledAnchor = addStyle("a");
 
-const data = require("../../data/data.json");
+import data from "../../data/data.json";
 
 // eslint-disable-next-line no-console
 console.log(data);

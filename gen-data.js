@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Command line tool for generating documentation data.
  */
@@ -7,7 +8,6 @@ const glob = require("glob");
 
 const fs = require("fs");
 const path = require("path");
-
 
 const packages = glob.sync("wonder-blocks/packages/*/package.json");
 

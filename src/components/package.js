@@ -1,13 +1,15 @@
 // @flow
 import * as React from "react";
 import {StyleSheet} from "aphrodite";
-import {View} from "@khanacademy/wonder-blocks-core";
+import Markdown from "react-markdown";
+import {View, addStyle} from "@khanacademy/wonder-blocks-core";
 import Color from "@khanacademy/wonder-blocks-color";
 
 import PropsTable from "./props-table.js";
 import FunctionDecl from "./function-decl.js";
 import Comments from "./comments.js";
 import TypeAnnotation from "./annotations/type-annotation.js";
+import CodeBlock from "./code-block.js"
 
 import {
     isClassDeclaration,
@@ -26,6 +28,8 @@ import type {
     ClassDeclaration,
     ObjectExpression,
 } from "../types/types.js";
+
+const StyledMarkdown = addStyle(Markdown);
 
 const getProps = (decl: Declaration, files: any): {
     propTypes: ?(ObjectTypeAnnotationT | GenericTypeAnnotationT),
@@ -105,7 +109,22 @@ type Declaration = {
     source: string,
     declaration: ClassDeclaration | FunctionDeclaration | ObjectExpression,
 };
-export default class Package extends React.Component<Props> {
+
+type State = {
+    markdown: ?string,
+};
+
+export default class Package extends React.Component<Props, State> {
+    state = {
+        markdown: null,
+    };
+
+    componentDidMount() {
+        fetch("button.md").then(res => res.text()).then(markdown => {
+            this.setState({markdown});
+        });
+    }
+
     render() {
         const {declarations, files} = this.props;
 
@@ -150,6 +169,15 @@ export default class Package extends React.Component<Props> {
 
         return <View style={styles.package}>
             <h1>{this.props.name}</h1>
+
+            {this.state.markdown && 
+                <StyledMarkdown 
+                    source={this.state.markdown} 
+                    style={{}}
+                    renderers={{
+                        code: CodeBlock,
+                    }}
+                />}
 
             {componentDecls.length > 0 && 
                 <h2 id="Components" style={{marginBottom:0}}>Components</h2>}
